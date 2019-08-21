@@ -1,6 +1,8 @@
 <template>
     <div
         :class="$style.container"
+        @touchstart="onTouchStart"
+        @touchend="onTouchEnd"
         @mousedown="onMouseDown"
         @mouseup="onMouseUp"
     />
@@ -10,40 +12,75 @@
     .container {
         width: 100%;
         height: 100%;
+        touch-action: none;
     }
 </style>
 
 <script>
 import { SVG } from '@svgdotjs/svg.js'
 export default {
+    data () {
+        return {
+            x: 0,
+            y: 0,
+            event: []
+        }
+    },
+
     mounted () {
         this.whiteboard = SVG().size('100%', '100%')
         this.$el.appendChild(this.whiteboard.node)
     },
 
     methods: {
-        onMouseDown (evt) {
-            this.pathData = [[ 'M', evt.x, evt.y ]]
-            this.points = [[ evt.x, evt.y, Date.now() ]]
+        onTouchStart (evt) {
+            evt.preventDefault()
+            return this.onMouseDown(evt, true)
+        },
+
+        onTouchMove (evt) {
+            return this.onMouseMove(evt, true)
+        },
+
+        onTouchEnd (evt) {
+            return this.onMouseUp(evt, true)
+        },
+
+        onMouseDown (evt, isTouch) {
+            let x = isTouch ? evt.touches[0].clientX : evt.clientX
+            let y = isTouch ? evt.touches[0].clientY : evt.clientY
+            this.pathData = [[ 'M', x, y ]]
+            this.points = [[ x, y, Date.now() ]]
             this.currentPath = this.whiteboard
                 .path(this.pathData)
                 .stroke({ width: 3, color: '#f0e' })
                 .fill('none')
 
-            this.$el.addEventListener('mousemove', this.onMouseMove)
+            if (isTouch) {
+                this.$el.addEventListener('touchmove', this.onTouchMove)
+            } else {
+                this.$el.addEventListener('mousemove', this.onMouseMove)
+            }
         },
 
-        onMouseMove (evt) {
-            this.pathData.push([ 'L', evt.x, evt.y ])
-            this.points.push([ evt.x, evt.y, Date.now() ])
+        onMouseMove (evt, isTouch) {
+            let x = isTouch ? evt.touches[0].clientX : evt.clientX
+            let y = isTouch ? evt.touches[0].clientY : evt.clientY
+            this.pathData.push([ 'L', x, y ])
+            this.points.push([ x, y, Date.now() ])
             this.currentPath.plot(this.pathData)
         },
 
-        onMouseUp () {
+        onMouseUp (evt, isTouch) {
             this.currentPath
                 .plot(this.getSvgPath(this.points, this.getBezierCommand))
                 .stroke({ width: 3, color: '#000' })
-            this.$el.removeEventListener('mousemove', this.onMouseMove)
+
+            if (isTouch) {
+                this.$el.removeEventListener('touchmove', this.onTouchMove)
+            } else {
+                this.$el.removeEventListener('mousemove', this.onMouseMove)
+            }
         },
 
         // source: https://medium.com/@francoisromain/smooth-a-svg-path-with-cubic-bezier-curves-e37b49d46c74
