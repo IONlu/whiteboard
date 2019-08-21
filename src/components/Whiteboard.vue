@@ -19,14 +19,6 @@
 <script>
 import { SVG } from '@svgdotjs/svg.js'
 export default {
-    data () {
-        return {
-            x: 0,
-            y: 0,
-            event: []
-        }
-    },
-
     mounted () {
         this.whiteboard = SVG().size('100%', '100%')
         this.$el.appendChild(this.whiteboard.node)
