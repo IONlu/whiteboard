@@ -1,11 +1,18 @@
 <template>
-    <div
+    <svg
         :class="$style.container"
         @touchstart="onTouchStart"
         @touchend="onTouchEnd"
         @mousedown="onMouseDown"
         @mouseup="onMouseUp"
-    />
+    >
+        <path
+            :d="path"
+            :stroke-width="width"
+            :stroke="color"
+            :fill="fill"
+        />
+    </svg>
 </template>
 
 <style module>
@@ -17,11 +24,14 @@
 </style>
 
 <script>
-import { SVG } from '@svgdotjs/svg.js'
 export default {
-    mounted () {
-        this.whiteboard = SVG().size('100%', '100%')
-        this.$el.appendChild(this.whiteboard.node)
+    data () {
+        return {
+            path: '',
+            width: 3,
+            color: '#000',
+            fill: 'none'
+        }
     },
 
     methods: {
@@ -41,12 +51,9 @@ export default {
         onMouseDown (evt, isTouch) {
             let x = isTouch ? evt.touches[0].clientX : evt.clientX
             let y = isTouch ? evt.touches[0].clientY : evt.clientY
-            this.pathData = [[ 'M', x, y ]]
+            this.path = `M ${x} ${y}`
             this.points = [[ x, y, Date.now() ]]
-            this.currentPath = this.whiteboard
-                .path(this.pathData)
-                .stroke({ width: 3, color: '#f0e' })
-                .fill('none')
+            this.color = '#F00'
 
             if (isTouch) {
                 this.$el.addEventListener('touchmove', this.onTouchMove)
@@ -58,15 +65,13 @@ export default {
         onMouseMove (evt, isTouch) {
             let x = isTouch ? evt.touches[0].clientX : evt.clientX
             let y = isTouch ? evt.touches[0].clientY : evt.clientY
-            this.pathData.push([ 'L', x, y ])
+            this.path += `L${x} ${y}`
             this.points.push([ x, y, Date.now() ])
-            this.currentPath.plot(this.pathData)
         },
 
         onMouseUp (evt, isTouch) {
-            this.currentPath
-                .plot(this.getSvgPath(this.points, this.getBezierCommand))
-                .stroke({ width: 3, color: '#000' })
+            this.path = this.getSvgPath(this.points, this.getBezierCommand)
+            this.color = '#000'
 
             if (isTouch) {
                 this.$el.removeEventListener('touchmove', this.onTouchMove)
