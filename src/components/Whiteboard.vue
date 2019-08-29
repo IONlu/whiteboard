@@ -92,10 +92,11 @@ export default {
         onMouseUp (evt, isTouch) {
             if (!this.hasMoved) {
                 this.startPath.fillColor = '#000'
+                this.path.remove()
+            } else {
+                this.path.strokeColor = '#000'
+                this.path.simplify()
             }
-
-            this.path.strokeColor = '#000'
-            this.path.simplify()
 
             if (isTouch) {
                 this.$el.removeEventListener('touchmove', this.onTouchMove)
