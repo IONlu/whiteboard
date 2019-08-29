@@ -3,9 +3,7 @@
         :class="$style.container"
         data-paper-resize
         @touchstart="onTouchStart"
-        @touchend="onTouchEnd"
         @mousedown="onMouseDown"
-        @mouseup="onMouseUp"
     />
 </template>
 
@@ -24,7 +22,7 @@ export default {
     props: {
         strokeWidth: {
             type: Number,
-            default: 40
+            default: 4
         }
     },
 
@@ -39,69 +37,119 @@ export default {
 
     mounted () {
         paper.setup(this.$el)
+        this.touchMap = new Map()
+
+        // add touch event listeners
+        window.addEventListener('touchmove', this.onTouchMove)
+        window.addEventListener('touchend', this.onTouchEnd)
+        window.addEventListener('touchcancel', this.onTouchEnd)
+    },
+
+    beforeDestroy () {
+        // remove touch event listeners
+        window.removeEventListener('touchmove', this.onTouchMove)
+        window.removeEventListener('touchend', this.onTouchEnd)
+        window.removeEventListener('touchcancel', this.onTouchEnd)
     },
 
     methods: {
+        onMouseDown (evt) {
+            this.start(
+                'mouse',
+                evt.clientX,
+                evt.clientY
+            )
+
+            window.addEventListener('mousemove', this.onMouseMove)
+            window.addEventListener('mouseup', this.onMouseUp)
+        },
+
+        onMouseMove (evt) {
+            this.move(
+                'mouse',
+                evt.clientX,
+                evt.clientY
+            )
+        },
+
+        onMouseUp () {
+            this.end('mouse')
+
+            window.removeEventListener('mousemove', this.onMouseMove)
+            window.removeEventListener('mouseup', this.onMouseUp)
+        },
+
         onTouchStart (evt) {
             evt.preventDefault()
-            return this.onMouseDown(evt, true)
+            for (var i = 0; i < evt.changedTouches.length; i++) {
+                this.start(
+                    'touch:' + evt.changedTouches[i].identifier,
+                    evt.changedTouches[i].clientX,
+                    evt.changedTouches[i].clientY
+                )
+            }
         },
 
         onTouchMove (evt) {
-            return this.onMouseMove(evt, true)
+            for (var i = 0; i < evt.changedTouches.length; i++) {
+                this.move(
+                    'touch:' + evt.changedTouches[i].identifier,
+                    evt.changedTouches[i].clientX,
+                    evt.changedTouches[i].clientY
+                )
+            }
         },
 
         onTouchEnd (evt) {
-            return this.onMouseUp(evt, true)
-        },
-
-        onMouseDown (evt, isTouch) {
-            let x = isTouch ? evt.touches[0].clientX : evt.clientX
-            let y = isTouch ? evt.touches[0].clientY : evt.clientY
-            let targetPoint = paper.view.viewToProject(new paper.Point(x, y))
-
-            this.startPath = new paper.Path.Circle(targetPoint, this.strokeWidth / 2)
-            this.startPath.fillColor = '#F00'
-            this.hasMoved = false
-
-            this.path = new paper.Path()
-            this.path.strokeColor = '#F00'
-            this.path.strokeWidth = this.strokeWidth
-            this.path.strokeCap = 'round'
-            this.path.strokeJoin = 'round'
-            this.path.moveTo(targetPoint)
-
-            if (isTouch) {
-                this.$el.addEventListener('touchmove', this.onTouchMove)
-            } else {
-                this.$el.addEventListener('mousemove', this.onMouseMove)
+            for (var i = 0; i < evt.changedTouches.length; i++) {
+                this.end('touch:' + evt.changedTouches[i].identifier)
             }
         },
 
-        onMouseMove (evt, isTouch) {
-            let x = isTouch ? evt.touches[0].clientX : evt.clientX
-            let y = isTouch ? evt.touches[0].clientY : evt.clientY
+        start (id, x, y) {
             let targetPoint = paper.view.viewToProject(new paper.Point(x, y))
 
-            this.hasMoved = true
-            this.startPath.remove()
+            let startPath = new paper.Path.Circle(targetPoint, this.strokeWidth / 2)
+            startPath.fillColor = '#F00'
+            let hasMoved = false
 
-            this.path.lineTo(targetPoint)
+            let path = new paper.Path()
+            path.strokeColor = '#F00'
+            path.strokeWidth = this.strokeWidth
+            path.strokeCap = 'round'
+            path.strokeJoin = 'round'
+            path.moveTo(targetPoint)
+
+            this.touchMap.set(id, {
+                startPath,
+                path,
+                hasMoved
+            })
         },
 
-        onMouseUp (evt, isTouch) {
-            if (!this.hasMoved) {
-                this.startPath.fillColor = '#000'
-                this.path.remove()
-            } else {
-                this.path.strokeColor = '#000'
-                this.path.simplify()
-            }
+        move (id, x, y) {
+            let targetPoint = paper.view.viewToProject(new paper.Point(x, y))
 
-            if (isTouch) {
-                this.$el.removeEventListener('touchmove', this.onTouchMove)
-            } else {
-                this.$el.removeEventListener('mousemove', this.onMouseMove)
+            let data = this.touchMap.get(id)
+            if (data) {
+                data.hasMoved = true
+                data.startPath.remove()
+
+                data.path.lineTo(targetPoint)
+            }
+        },
+
+        end (id) {
+            let data = this.touchMap.get(id)
+            if (data) {
+                if (!data.hasMoved) {
+                    data.startPath.fillColor = '#000'
+                    data.path.remove()
+                } else {
+                    data.path.strokeColor = '#000'
+                    data.path.simplify()
+                }
+                this.touchMap.delete(id)
             }
         }
     }
