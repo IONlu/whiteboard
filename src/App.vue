@@ -2,12 +2,12 @@
     <div :class="$style.app">
         <div :class="$style.menuContainer">
             <div
-                :class="$style.colorBubble"
+                :class="strokeColorBubbleClasses"
                 :style="strokeColorStyle"
                 @click="switchColor('stroke')"
             />
             <div
-                :class="$style.colorBubble"
+                :class="fillColorBubbleClasses"
                 :style="fillColorStyle"
                 @click="switchColor('fill')"
             />
@@ -40,6 +40,14 @@
         width: 3vmax;
         height: 3vmax;
         box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .colorBubble.empty {
+        border: 1px solid #CCC;
+        border-radius: 50%;
     }
 
     .menuContainer {
@@ -87,16 +95,36 @@ export default {
     },
 
     computed: {
-        strokeColorStyle () {
+        strokeColorBubbleClasses () {
             return {
-                border: `0.5vmax solid ${this.strokeColor}`
+                [this.$style.colorBubble]: true,
+                [this.$style.empty]: !this.strokeColor
             }
         },
 
-        fillColorStyle () {
+        fillColorBubbleClasses () {
             return {
-                backgroundColor: this.fillColor
+                [this.$style.colorBubble]: true,
+                [this.$style.empty]: !this.fillColor
             }
+        },
+
+        strokeColorStyle () {
+            if (this.strokeColor) {
+                return {
+                    border: `0.5vmax solid ${this.strokeColor}`
+                }
+            }
+            return {}
+        },
+
+        fillColorStyle () {
+            if (this.fillColor) {
+                return {
+                    backgroundColor: this.fillColor
+                }
+            }
+            return {}
         }
     },
 
