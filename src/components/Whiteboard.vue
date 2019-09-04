@@ -20,6 +20,16 @@ import paper from 'paper'
 
 export default {
     props: {
+        strokeColor: {
+            type: String,
+            default: 'black'
+        },
+
+        fillColor: {
+            type: String,
+            default: undefined
+        },
+
         strokeWidth: {
             type: Number,
             default: 4
@@ -110,11 +120,12 @@ export default {
             let targetPoint = paper.view.viewToProject(new paper.Point(x, y))
 
             let startPath = new paper.Path.Circle(targetPoint, this.strokeWidth / 2)
-            startPath.fillColor = '#F00'
+            startPath.fillColor = this.strokeColor
             let hasMoved = false
 
             let path = new paper.Path()
-            path.strokeColor = '#F00'
+            path.strokeColor = this.strokeColor
+            path.fillColor = this.fillColor
             path.strokeWidth = this.strokeWidth
             path.strokeCap = 'round'
             path.strokeJoin = 'round'
@@ -143,10 +154,8 @@ export default {
             let data = this.touchMap.get(id)
             if (data) {
                 if (!data.hasMoved) {
-                    data.startPath.fillColor = '#000'
                     data.path.remove()
                 } else {
-                    data.path.strokeColor = '#000'
                     data.path.simplify()
                 }
                 this.touchMap.delete(id)
