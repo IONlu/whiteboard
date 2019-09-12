@@ -4,6 +4,7 @@
             <div
                 :class="strokeColorBubbleClasses"
                 :style="strokeColorStyle"
+                class="rounded-full"
                 @click="switchColor('stroke')"
             />
             <div
@@ -36,7 +37,6 @@
     }
 
     .colorBubble {
-        border-radius: 50%;
         width: 3vmax;
         height: 3vmax;
         box-sizing: border-box;
