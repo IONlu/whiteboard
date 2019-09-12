@@ -1,18 +1,19 @@
 <template>
     <div :class="$style.app">
-        <div :class="$style.menuContainer">
+        <tool-box>
             <div
                 :class="strokeColorBubbleClasses"
                 :style="strokeColorStyle"
-                class="rounded-full"
+                class="rounded-full m-2"
                 @click="switchColor('stroke')"
             />
             <div
                 :class="fillColorBubbleClasses"
                 :style="fillColorStyle"
+                class="rounded-full m-2"
                 @click="switchColor('fill')"
             />
-        </div>
+        </tool-box>
         <Whiteboard
             :stroke-width="strokeWidth"
             :stroke-color="strokeColor"
@@ -47,25 +48,17 @@
 
     .colorBubble.empty {
         border: 1px solid #CCC;
-        border-radius: 50%;
-    }
-
-    .menuContainer {
-        position: absolute;
-        margin: 0.5vmax;
-    }
-
-    .menuContainer > *:not(:first-child) {
-        margin-top: 0.5vmax;
     }
 </style>
 
 <script>
-import Whiteboard from './components/Whiteboard.vue'
+import Whiteboard from './components/Whiteboard'
+import ToolBox from './components/ToolBox'
 
 export default {
     components: {
-        Whiteboard
+        Whiteboard,
+        ToolBox
     },
 
     data () {
