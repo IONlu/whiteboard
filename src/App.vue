@@ -1,23 +1,21 @@
 <template>
     <div :class="$style.app">
         <tool-box>
-            <div
-                :class="strokeColorBubbleClasses"
-                :style="strokeColorStyle"
-                class="rounded-full m-2"
-                @click="switchColor('stroke')"
+            <color-bubble
+                :color="primaryColor"
+                class="mt-3 first:mt-0"
+                @click.native="switchColor('primary')"
             />
-            <div
-                :class="fillColorBubbleClasses"
-                :style="fillColorStyle"
-                class="rounded-full m-2"
-                @click="switchColor('fill')"
+            <color-bubble
+                :color="secondaryColor"
+                class="mt-3 first:mt-0"
+                @click.native="switchColor('secondary')"
             />
         </tool-box>
         <Whiteboard
             :stroke-width="strokeWidth"
-            :stroke-color="strokeColor"
-            :fill-color="fillColor"
+            :stroke-color="primaryColor"
+            :fill-color="secondaryColor"
         />
     </div>
 </template>
@@ -37,39 +35,33 @@
         overflow: hidden;
     }
 
-    .colorBubble {
-        width: 3vmax;
-        height: 3vmax;
-        box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .colorBubble.empty {
-        border: 1px solid #CCC;
+    .color:before {
+        content: '×'
     }
 </style>
 
 <script>
 import Whiteboard from './components/Whiteboard'
 import ToolBox from './components/ToolBox'
+import ColorBubble from './components/ColorBubble'
 
 export default {
     components: {
         Whiteboard,
-        ToolBox
+        ToolBox,
+        ColorBubble
     },
 
     data () {
         return {
             strokeWidth: 4,
-            strokeColor: 'black',
-            fillColor: undefined,
+            primaryColorIndex: 1,
+            secondaryColorIndex: 0,
             colors: [
-                '#C0C0C0',
-                '#808080',
+                undefined,
                 '#000000',
+                '#808080',
+                '#C0C0C0',
                 '#FF0000',
                 '#800000',
                 '#FFFF00',
@@ -81,57 +73,26 @@ export default {
                 '#0000FF',
                 '#000080',
                 '#FF00FF',
-                '#800080',
-                undefined
+                '#800080'
             ]
         }
     },
 
     computed: {
-        strokeColorBubbleClasses () {
-            return {
-                [this.$style.colorBubble]: true,
-                [this.$style.empty]: !this.strokeColor
-            }
+        primaryColor () {
+            return this.colors[this.primaryColorIndex]
         },
 
-        fillColorBubbleClasses () {
-            return {
-                [this.$style.colorBubble]: true,
-                [this.$style.empty]: !this.fillColor
-            }
-        },
-
-        strokeColorStyle () {
-            if (this.strokeColor) {
-                return {
-                    border: `0.5vmax solid ${this.strokeColor}`
-                }
-            }
-            return {}
-        },
-
-        fillColorStyle () {
-            if (this.fillColor) {
-                return {
-                    backgroundColor: this.fillColor
-                }
-            }
-            return {}
+        secondaryColor () {
+            return this.colors[this.secondaryColorIndex]
         }
     },
 
     methods: {
         switchColor (type) {
-            let newColor = this.colors[Math.floor((Math.random() * this.colors.length))]
-            switch (type) {
-                case 'stroke':
-                    this.strokeColor = newColor
-                    break
-
-                case 'fill':
-                    this.fillColor = newColor
-                    break
+            this[`${type}ColorIndex`]++
+            if (this[`${type}ColorIndex`] >= this.colors.length) {
+                this[`${type}ColorIndex`] = 0
             }
         }
     }

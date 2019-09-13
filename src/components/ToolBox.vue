@@ -1,7 +1,7 @@
 <template>
     <div
         :style="containerStyle"
-        class="bg-white border-gray-300 border-solid border rounded-lg m-2 absolute"
+        class="bg-white border-gray-300 border-solid border rounded-lg p-3 absolute"
     >
         <slot />
     </div>
@@ -14,8 +14,8 @@ export default {
     data () {
         return {
             position: {
-                x: 0,
-                y: 0
+                x: 10,
+                y: 10
             }
         }
     },
@@ -23,7 +23,7 @@ export default {
     computed: {
         containerStyle () {
             return {
-                transform: `translate(${this.position.x}px, ${this.position.y}px)`
+                transform: `translate3d(${this.position.x}px, ${this.position.y}px, 0)`
             }
         }
     },
