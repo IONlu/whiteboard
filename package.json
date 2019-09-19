@@ -11,6 +11,7 @@
         "core-js": "^2.6.5",
         "interactjs": "^1.6.2",
         "paper": "^0.12.3",
+        "popper.js": "^1.15.0",
         "tailwindcss": "^1.1.2",
         "vue": "^2.6.10"
     },

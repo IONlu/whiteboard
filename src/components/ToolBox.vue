@@ -1,58 +1,34 @@
 <template>
     <div
         :style="containerStyle"
-        class="bg-white border-gray-300 border-solid border rounded-lg p-3 absolute"
+        :class="$style.container"
+        class="bg-white border-gray-300 border-solid border rounded-lg absolute p-3"
     >
         <slot />
     </div>
 </template>
 
-<script>
-import interact from 'interactjs'
+<style module>
+    .container {
+        display: grid;
+        grid-gap: 0.75rem;
+    }
+</style>
 
+<script>
 export default {
-    data () {
-        return {
-            position: {
-                x: 10,
-                y: 10
-            }
+    props: {
+        columns: {
+            type: Number,
+            default: 1
         }
     },
 
     computed: {
         containerStyle () {
             return {
-                transform: `translate3d(${this.position.x}px, ${this.position.y}px, 0)`
+                'grid-template-columns': `repeat(${this.columns}, auto)`
             }
-        }
-    },
-
-    mounted () {
-        interact(this.$el)
-            .draggable({
-                // enable inertial throwing
-                inertia: true,
-
-                // keep the element within the area of it's parent
-                modifiers: [
-                    interact.modifiers.restrictRect({
-                        restriction: 'parent',
-                        endOnly: true
-                    })
-                ],
-
-                // enable autoScroll
-                autoScroll: false,
-
-                onmove: this.onMove
-            })
-    },
-
-    methods: {
-        onMove (evt) {
-            this.position.x += evt.dx
-            this.position.y += evt.dy
         }
     }
 }

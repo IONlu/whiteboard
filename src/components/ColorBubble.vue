@@ -1,16 +1,22 @@
 <template>
     <div
         :style="colorStyle"
-        :class="$style.container"
         class="flex items-center justify-center border-gray-300 border-solid border rounded w-10 h-10"
-    />
+        @click="$emit('click', $event)"
+    >
+        <div
+            v-if="!color"
+            :class="$style.transparent"
+            class="text-3xl"
+        >
+            ×
+        </div>
+    </div>
 </template>
 
 <style module>
-.container:before {
-    content: '×';
-    font-size: 2em;
-    z-index: -1;
+.transparent {
+    color: rgba(0, 0, 0, 0.3)
 }
 </style>
 

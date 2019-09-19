@@ -1,17 +1,37 @@
 <template>
     <div :class="$style.app">
-        <tool-box>
-            <color-bubble
-                :color="primaryColor"
-                class="mt-3 first:mt-0"
-                @click.native="switchColor('primary')"
-            />
-            <color-bubble
-                :color="secondaryColor"
-                class="mt-3 first:mt-0"
-                @click.native="switchColor('secondary')"
-            />
-        </tool-box>
+        <draggable v-slot="{ style }">
+            <tool-box :style="style">
+                <color-bubble
+                    ref="primaryColorBubble"
+                    :color="primaryColor"
+                    @click="onPrimaryColorClick"
+                />
+                <color-bubble
+                    ref="secondaryColorBubble"
+                    :color="secondaryColor"
+                    @click="onSecondaryColorClick"
+                />
+                <popper
+                    v-if="showPrimaryColorPalette"
+                    :reference="$refs.primaryColorBubble.$el"
+                >
+                    <color-palette
+                        :colors="colors"
+                        @select="onPrimaryColorSelect"
+                    />
+                </popper>
+                <popper
+                    v-if="showSecondaryColorPalette"
+                    :reference="$refs.secondaryColorBubble.$el"
+                >
+                    <color-palette
+                        :colors="colors"
+                        @select="onSecondaryColorSelect"
+                    />
+                </popper>
+            </tool-box>
+        </draggable>
         <Whiteboard
             :stroke-width="strokeWidth"
             :stroke-color="primaryColor"
@@ -45,19 +65,32 @@
 import Whiteboard from './components/Whiteboard'
 import ToolBox from './components/ToolBox'
 import ColorBubble from './components/ColorBubble'
+import ColorPalette from './components/ColorPalette'
+import Popper from './components/Popper'
+import Draggable from './components/Draggable'
+import ReactiveRefs from './mixins/ReactiveRefs'
 
 export default {
     components: {
         Whiteboard,
         ToolBox,
-        ColorBubble
+        ColorBubble,
+        ColorPalette,
+        Popper,
+        Draggable
     },
+
+    mixins: [
+        ReactiveRefs()
+    ],
 
     data () {
         return {
+            showPrimaryColorPalette: false,
+            showSecondaryColorPalette: false,
             strokeWidth: 4,
-            primaryColorIndex: 1,
-            secondaryColorIndex: 0,
+            primaryColor: '#000000',
+            secondaryColor: undefined,
             colors: [
                 undefined,
                 '#000000',
@@ -75,26 +108,31 @@ export default {
                 '#000080',
                 '#FF00FF',
                 '#800080'
-            ]
-        }
-    },
-
-    computed: {
-        primaryColor () {
-            return this.colors[this.primaryColorIndex]
-        },
-
-        secondaryColor () {
-            return this.colors[this.secondaryColorIndex]
+            ],
+            popperOptions: {
+                gpuAcceleration: true,
+                placement: 'right'
+            }
         }
     },
 
     methods: {
-        switchColor (type) {
-            this[`${type}ColorIndex`]++
-            if (this[`${type}ColorIndex`] >= this.colors.length) {
-                this[`${type}ColorIndex`] = 0
-            }
+        onPrimaryColorSelect (color) {
+            this.primaryColor = color
+            this.showPrimaryColorPalette = false
+        },
+
+        onSecondaryColorSelect (color) {
+            this.secondaryColor = color
+            this.showSecondaryColorPalette = false
+        },
+
+        onPrimaryColorClick () {
+            this.showPrimaryColorPalette = !this.showPrimaryColorPalette
+        },
+
+        onSecondaryColorClick () {
+            this.showSecondaryColorPalette = !this.showSecondaryColorPalette
         }
     }
 }
