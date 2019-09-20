@@ -2,7 +2,8 @@
     <div
         :style="colorStyle"
         class="flex items-center justify-center border-gray-300 border-solid border rounded w-10 h-10"
-        @click="$emit('click', $event)"
+        @touchend.prevent="$emit('click', $event)"
+        @click.prevent="$emit('click', $event)"
     >
         <div
             v-if="!color"
