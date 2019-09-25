@@ -22,7 +22,7 @@ export default {
     props: {
         strokeColor: {
             type: String,
-            default: 'black'
+            default: undefined
         },
 
         fillColor: {
