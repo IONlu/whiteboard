@@ -17,6 +17,7 @@
         <popper
             v-if="showPrimaryColorPalette"
             :reference="$refs.primaryColorBubble.$el"
+            @close="closePrimaryColorPalette"
         >
             <color-palette
                 :colors="colors"
@@ -26,6 +27,7 @@
         <popper
             v-if="showSecondaryColorPalette"
             :reference="$refs.secondaryColorBubble.$el"
+            @close="closeSecondaryColorPalette"
         >
             <color-palette
                 :colors="colors"
@@ -139,6 +141,14 @@ export default {
 
         onSecondaryColorClick () {
             this.showSecondaryColorPalette = !this.showSecondaryColorPalette
+        },
+
+        closePrimaryColorPalette () {
+            this.showPrimaryColorPalette = false
+        },
+
+        closeSecondaryColorPalette () {
+            this.showSecondaryColorPalette = false
         }
     }
 }
