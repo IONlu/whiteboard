@@ -12,26 +12,26 @@
                     :color="secondaryColor"
                     @click="onSecondaryColorClick"
                 />
-                <popper
-                    v-if="showPrimaryColorPalette"
-                    :reference="$refs.primaryColorBubble.$el"
-                >
-                    <color-palette
-                        :colors="colors"
-                        @select="onPrimaryColorSelect"
-                    />
-                </popper>
-                <popper
-                    v-if="showSecondaryColorPalette"
-                    :reference="$refs.secondaryColorBubble.$el"
-                >
-                    <color-palette
-                        :colors="colors"
-                        @select="onSecondaryColorSelect"
-                    />
-                </popper>
             </tool-box>
         </draggable>
+        <popper
+            v-if="showPrimaryColorPalette"
+            :reference="$refs.primaryColorBubble.$el"
+        >
+            <color-palette
+                :colors="colors"
+                @select="onPrimaryColorSelect"
+            />
+        </popper>
+        <popper
+            v-if="showSecondaryColorPalette"
+            :reference="$refs.secondaryColorBubble.$el"
+        >
+            <color-palette
+                :colors="colors"
+                @select="onSecondaryColorSelect"
+            />
+        </popper>
         <Whiteboard
             :stroke-width="strokeWidth"
             :stroke-color="primaryColor"
@@ -93,21 +93,27 @@ export default {
             secondaryColor: undefined,
             colors: [
                 undefined,
+                '#FFFFFF',
                 '#000000',
-                '#808080',
-                '#C0C0C0',
-                '#FF0000',
-                '#800000',
-                '#FFFF00',
-                '#808000',
-                '#00FF00',
-                '#008000',
-                '#00FFFF',
-                '#008080',
-                '#0000FF',
-                '#000080',
-                '#FF00FF',
-                '#800080'
+                '#F44336',
+                '#E91E63',
+                '#9C27B0',
+                '#673AB7',
+                '#3F51B5',
+                '#2196F3',
+                '#03A9F4',
+                '#00BCD4',
+                '#009688',
+                '#4CAF50',
+                '#8BC34A',
+                '#CDDC39',
+                '#FFEB3B',
+                '#FFC107',
+                '#FF9800',
+                '#FF5722',
+                '#795548',
+                '#9E9E9E',
+                '#607D8B'
             ],
             popperOptions: {
                 gpuAcceleration: true,
