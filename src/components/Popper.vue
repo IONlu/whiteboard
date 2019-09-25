@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div
+        :style="styles"
+        class="absolute"
+    >
         <slot />
     </div>
 </template>
@@ -20,6 +23,12 @@ export default {
         }
     },
 
+    data () {
+        return {
+            styles: {}
+        }
+    },
+
     created () {
         this.outsideClickOptions = {
             capture: true,
@@ -36,6 +45,14 @@ export default {
                 preventOverflow: {
                     enabled: true,
                     boundariesElement: 'viewport'
+                },
+                applyStyle: {
+                    enabled: false
+                },
+                applyVueStyle: {
+                    enabled: true,
+                    fn: this.handlePopperUpdate,
+                    order: 900
                 }
             }
         })
@@ -54,6 +71,10 @@ export default {
             if (!this.$el.contains(evt.target)) {
                 this.$emit('close')
             }
+        },
+
+        handlePopperUpdate (data) {
+            this.styles = data.styles
         }
     }
 }

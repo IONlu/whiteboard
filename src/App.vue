@@ -1,7 +1,10 @@
 <template>
     <div :class="$style.app">
-        <draggable v-slot="{ style }">
-            <tool-box :style="style">
+        <draggable v-slot="{ style, classes }">
+            <tool-box
+                :style="style"
+                :class="classes"
+            >
                 <color-bubble
                     ref="primaryColorBubble"
                     :color="primaryColor"

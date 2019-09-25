@@ -49,7 +49,8 @@ export default {
 
     render () {
         return this.$scopedSlots.default({
-            style: this.style
+            style: this.style,
+            classes: [ 'absolute' ]
         })
     }
 }

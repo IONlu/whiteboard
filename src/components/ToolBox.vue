@@ -2,7 +2,7 @@
     <div
         :style="containerStyle"
         :class="$style.container"
-        class="bg-white border-gray-300 border-solid border rounded-lg absolute p-3"
+        class="bg-white border-gray-300 border-solid border rounded-lg p-3"
     >
         <slot />
     </div>
