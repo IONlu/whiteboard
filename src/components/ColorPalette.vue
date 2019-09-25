@@ -2,20 +2,35 @@
     <tool-box
         :columns="columns"
     >
-        <color-bubble
-            v-for="color in colors"
-            :key="color"
-            :color="color"
-            @click="onClick(color)"
-        />
-        <color-picker
-            :style="colorPickerStyle"
-            v-bind="colorPicker"
-            @input="onColorPickerInput"
-            @change="onColorPickerChange"
-        />
+        <template v-for="(colorGroup, index) in colors">
+            <color-bubble
+                v-for="color in colorGroup"
+                :key="index+'-'+color"
+                :color="color"
+                @click="onClick(color)"
+            />
+            <hr :style="fullRowStyle" />
+        </template>
+        <div
+            :class="$style.colorPickerContainer"
+            :style="fullRowStyle"
+        >
+            <color-picker
+                v-bind="colorPicker"
+                @input="onColorPickerInput"
+                @change="onColorPickerChange"
+            />
+        </div>
     </tool-box>
 </template>
+
+<style module>
+.colorPickerContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
 
 <script>
 import chroma from 'chroma-js'
@@ -44,7 +59,7 @@ export default {
             colorPicker: {
                 variant: 'persistent',
                 hue: 50,
-                saturation: 100,
+                saturation: 90,
                 luminosity: 50,
                 alpha: 1
             }
@@ -52,7 +67,7 @@ export default {
     },
 
     computed: {
-        colorPickerStyle () {
+        fullRowStyle () {
             return {
                 gridColumn: `span ${this.columns}`
             }

@@ -96,29 +96,36 @@ export default {
             strokeWidth: 4,
             primaryColor: '#000000',
             secondaryColor: undefined,
-            colors: [
-                undefined,
-                '#FFFFFF',
-                '#000000',
-                '#F44336',
-                '#E91E63',
-                '#9C27B0',
-                '#673AB7',
-                '#3F51B5',
-                '#2196F3',
-                '#03A9F4',
-                '#00BCD4',
-                '#009688',
-                '#4CAF50',
-                '#8BC34A',
-                '#CDDC39',
-                '#FFEB3B',
-                '#FFC107',
-                '#FF9800',
-                '#FF5722',
-                '#795548',
-                '#9E9E9E',
-                '#607D8B'
+            recentColors: [],
+            defaultColors: [
+                [
+                    undefined,
+                    '#FFFFFF',
+                    '#BBBBBB',
+                    '#999999',
+                    '#444444',
+                    '#000000'
+                ],
+                [
+                    '#F44336',
+                    '#E91E63',
+                    '#9C27B0',
+                    '#673AB7',
+                    '#3F51B5',
+                    '#2196F3',
+                    '#03A9F4',
+                    '#00BCD4',
+                    '#009688',
+                    '#4CAF50',
+                    '#8BC34A',
+                    '#CDDC39',
+                    '#FFEB3B',
+                    '#FFC107',
+                    '#FF9800',
+                    '#FF5722',
+                    '#795548',
+                    '#607D8B'
+                ]
             ],
             popperOptions: {
                 gpuAcceleration: true,
@@ -127,13 +134,27 @@ export default {
         }
     },
 
+    computed: {
+        colors () {
+            if (this.recentColors.length > 0) {
+                return [
+                    this.recentColors,
+                    ...this.defaultColors
+                ]
+            }
+            return this.defaultColors
+        }
+    },
+
     methods: {
         onPrimaryColorSelect (color) {
+            this.updateRecentColors(color);
             this.primaryColor = color
             this.showPrimaryColorPalette = false
         },
 
         onSecondaryColorSelect (color) {
+            this.updateRecentColors(color);
             this.secondaryColor = color
             this.showSecondaryColorPalette = false
         },
@@ -152,6 +173,15 @@ export default {
 
         closeSecondaryColorPalette () {
             this.showSecondaryColorPalette = false
+        },
+
+        updateRecentColors (color) {
+            this.recentColors = [
+                ...new Set([
+                    color,
+                    ...this.recentColors
+                ])
+            ].slice(0, 6)
         }
     }
 }
